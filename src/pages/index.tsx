@@ -1,7 +1,7 @@
-import { styled } from "../styleds"
+import { styled } from "../styles"
 
 const Button = styled('button', {
-  backgroundColor: '$primary',
+  backgroundColor: '$green300',
   border: 0,
   padding: '4px 8px',
   borderRadius: 4,
