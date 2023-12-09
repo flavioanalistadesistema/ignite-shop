@@ -10,7 +10,8 @@ import productImg3 from '../assets/camisetas/3.png'
 import productImg4 from '../assets/camisetas/4.png'
 import { stripe } from "../lib/stripe";
 import Stripe from "stripe";
-import { GetServerSideProps } from "next";
+import { GetServerSideProps, GetStaticProps } from "next";
+import { priceFormatter } from "../lib/intl";
 
 interface HomeProps {
   products: {
@@ -47,7 +48,7 @@ export default function Home({products}: HomeProps) {
   )
 }
 
-  export const getServerSideProps: GetServerSideProps = async () => {
+  export const getStaticProps: GetStaticProps = async () => {
     const response = await stripe.products.list({
       expand: ['data.default_price']
     })
@@ -59,13 +60,14 @@ export default function Home({products}: HomeProps) {
         id: product.id,
         title: product.name,
         image: product.images[0],
-        price: price.unit_amount / 100,
+        price: priceFormatter.format(price.unit_amount / 100)
       }
     })
 
     return {
       props: {
         products
-      }
+      },
+      revalidate: 60 * 60 * 24 // 24 hours
     }
   }
