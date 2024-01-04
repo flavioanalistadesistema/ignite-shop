@@ -1,17 +1,66 @@
-import { useRouter } from 'next/router'
+import { GetStaticProps } from 'next'
 import { ImageContainer, ProductContainer, ProductDetails } from '../../styles/page/product'
+import { stripe } from '../../lib/stripe'
+import Stripe from 'stripe'
+import { priceFormatter } from '../../lib/intl'
+import Image from 'next/image'
 
-export default function Product(){
+interface ProductProps {
+    product: {
+        id: string
+        name: string
+        description: string
+        price: number
+        image: string
+    }
+}
+
+export default function Product({product}: Readonly<ProductProps>) {
     return (
         <ProductContainer>
             <ImageContainer>
+                <Image
+                    src={product.image}
+                    alt={product.name}
+                    width={500}
+                    height={500}
+                />
             </ImageContainer>
             <ProductDetails>
-                <h1>Camiseta x</h1>
-                <span>R$ 99,99</span>
-                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Neque error culpa obcaecati dignissimos distinctio, hic ex voluptatibus facilis ut velit architecto, aspernatur nesciunt perspiciatis accusantium nisi totam, quod iure! Accusantium!</p>
+                <h1>{product.name}</h1>
+                <span>{product.price}</span>
+                <p>{product.description}</p>
                 <button>Finalizar Compra</button>
             </ProductDetails>
         </ProductContainer>
     )
+}
+
+export const getStaticPaths = async () => {
+    return {
+        paths: [
+            { params: { id: 'prod_Oys8gXyoEYxoHq' } },
+        ],
+        fallback: true
+    }
+}
+
+export const getStaticProps: GetStaticProps<any, {id: string}> = async ({params}) => {
+    const { id } = params
+    const response = await stripe.products.retrieve(id, {
+        expand: ['default_price']
+    })
+    const price = response.default_price as Stripe.Price
+    return {
+        props: {
+            product: {
+                id: response.id,
+                name: response.name,
+                description: response.description,
+                price: priceFormatter.format(price.unit_amount / 100),
+                image: response.images[0]
+            }
+        },
+        revalidate: 60 * 60 * 24 // 24 hours
+    }
 }
