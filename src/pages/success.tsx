@@ -3,6 +3,7 @@ import { ContainerSuccess, ImageSuccess } from "../styles/page/success";
 import { GetServerSideProps } from "next";
 import { stripe } from "../lib/stripe";
 import Stripe from "stripe";
+import Head from "next/head";
 
 interface SuccessProps {
     customerName: string;
@@ -15,18 +16,24 @@ interface SuccessProps {
 
 export default function Success({customerName, product}: SuccessProps){
     return (
-        <ContainerSuccess>
-            <h1>Compra efetuada!</h1>
-            <ImageSuccess>
-                <img src={product.image} alt={product.name} width={150} height={140} />
-            </ImageSuccess>
-            <p>
-                Uhuul <strong>{customerName}</strong>, sua <strong>{product.name}</strong> já está a caminho da sua casa.
-            </p>
-            <Link href={'/'}>
-                Voltar ao catálogo
-            </Link>
-        </ContainerSuccess>
+        <>
+        <Head>
+            <title>Compra efetuada | ignte shopping</title>
+            <meta name="robots" content="noIndex"/>
+        </Head>
+            <ContainerSuccess>
+                <h1>Compra efetuada!</h1>
+                <ImageSuccess>
+                    <img src={product.image} alt={product.name} width={150} height={140} />
+                </ImageSuccess>
+                <p>
+                    Uhuul <strong>{customerName}</strong>, sua <strong>{product.name}</strong> já está a caminho da sua casa.
+                </p>
+                <Link href={'/'}>
+                    Voltar ao catálogo
+                </Link>
+            </ContainerSuccess>
+        </>
     )
 }
 
