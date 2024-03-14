@@ -4,6 +4,7 @@ import { stripe } from '../../lib/stripe'
 import Stripe from 'stripe'
 import { priceFormatter } from '../../lib/intl'
 import Image from 'next/image'
+import { useRouter } from 'next/router'
 
 interface ProductProps {
     product: {
@@ -16,6 +17,10 @@ interface ProductProps {
 }
 
 export default function Product({product}: Readonly<ProductProps>) {
+    const { isFallback } = useRouter()
+    if (isFallback) {
+        return <h1>Carregando...</h1>
+    }
     return (
         <ProductContainer>
             <ImageContainer>
