@@ -13,6 +13,7 @@ interface ProductProps {
         description: string
         price: number
         image: string
+        priceId: string
     }
 }
 
@@ -21,21 +22,26 @@ export default function Product({product}: Readonly<ProductProps>) {
     if (isFallback) {
         return <h1>Carregando...</h1>
     }
+
+    function handleByProduct() {
+        console.log(product.priceId);
+    }
+
     return (
         <ProductContainer>
             <ImageContainer>
                 <Image
                     src={product.image}
                     alt={product.name}
-                    width={500}
-                    height={500}
+                    width={520}
+                    height={400}
                 />
             </ImageContainer>
             <ProductDetails>
                 <h1>{product.name}</h1>
                 <span>{product.price}</span>
                 <p>{product.description}</p>
-                <button>Finalizar Compra</button>
+                <button onClick={handleByProduct}>Comprar Agora</button>
             </ProductDetails>
         </ProductContainer>
     )
@@ -63,7 +69,8 @@ export const getStaticProps: GetStaticProps<any, {id: string}> = async ({params}
                 name: response.name,
                 description: response.description,
                 price: priceFormatter.format(price.unit_amount / 100),
-                image: response.images[0]
+                image: response.images[0],
+                priceId: price.id
             }
         },
         revalidate: 60 * 60 * 24 // 24 hours
