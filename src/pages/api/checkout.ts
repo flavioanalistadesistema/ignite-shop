@@ -3,9 +3,10 @@ import { stripe } from "../../lib/stripe";
 
 const successUrl = `${process.env.NEXT_PUBLIC_API_URL}/success`;
 const cancelUrl = `${process.env.NEXT_PUBLIC_API_URL}/`;
-const priceId = 'price_1OAuNCCjjzmXgqAzAdoMFpuB';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse ) {
+  const { priceId } = req.body;
+
   const session = await stripe.checkout.sessions.create({
     success_url: successUrl,
     cancel_url: cancelUrl,

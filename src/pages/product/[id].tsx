@@ -5,6 +5,7 @@ import Stripe from 'stripe'
 import { priceFormatter } from '../../lib/intl'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
+import axios from 'axios'
 
 interface ProductProps {
     product: {
@@ -23,8 +24,18 @@ export default function Product({product}: Readonly<ProductProps>) {
         return <h1>Carregando...</h1>
     }
 
-    function handleByProduct() {
-        console.log(product.priceId);
+    async function handleByProduct() {
+        try {
+            const response = await axios.post('/api/checkout', {
+                priceId: product.priceId
+            })
+            const { checkoutUrl } = response.data
+            if (checkoutUrl) {
+                window.location.href = checkoutUrl
+            }
+        } catch (error) {
+            alert('Erro ao comprar o produto')
+        }
     }
 
     return (
